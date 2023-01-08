@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd"
+>
+    <bean id="cat" name="cat" class="com.spring3.zoo.impl.Cat"/>
+    <bean id="dog" name="dog" class="com.spring3.zoo.impl.Dog"/>
+
+    <bean id="setterZoo" name="setterZoo" class="com.spring3.zoo.Zoo" scope="prototype">
+        <property name="animal1" ref="cat"/>
+        <property name="animal2" ref="dog"/>
+        <property name="animals">
+            <list>
+                <ref bean="cat"/>
+                <ref bean="dog"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id ="constructorZoo" name ="constructorZoo" class="com.spring3.zoo.Zoo" scope="prototype">
+        <constructor-arg name="animal1" ref="dog"/>
+        <constructor-arg name="animal2" ref="cat"/>
+        <property name="animals">
+            <list>
+                <ref bean="cat"/>
+                <ref bean="dog"/>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>
