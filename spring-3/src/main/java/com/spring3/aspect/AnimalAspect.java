@@ -1,16 +1,25 @@
 package com.spring3.aspect;
 
+import com.spring3.exception.FoodExpiredDateException;
+import com.spring3.exception.FoodIncorrectTypeException;
+import com.spring3.zoo.Animal;
 import com.spring3.zoo.food.Food;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Aspect
 @Component
 public class AnimalAspect {
     @Pointcut("execution(* com.spring3.zoo.Animal.voice())")
     public void voicePoint(){
+    }
+
+    @Pointcut("execution(* com.spring3.zoo.Animal.feed(..))")
+    public void feedPoint(){
     }
 
     @Pointcut("execution(* com.spring3.zoo.*.*(..))")
@@ -54,21 +63,17 @@ public class AnimalAspect {
         System.out.println(e.getMessage());
     }
 
-    @Around(value = "anyAnimalMethod() && withArg(food)", argNames = "joinPoint, food")
-    public Object around(ProceedingJoinPoint joinPoint, Food food) throws Throwable {
-        Object result = null;
-        //before
-        try {
-            result = joinPoint.proceed();
-            //after returning
-        } catch (Throwable e) {
-            e.printStackTrace();
-            //after throwing
-            throw e;
-        } finally {
-            //after
+    @Before(value = "feedPoint() && withArg(food)", argNames = "joinPoint, food")
+    public void around(JoinPoint joinPoint, Food food) {
+        if(food.getExpiredDate().isBefore(LocalDateTime.now())){
+            throw new FoodExpiredDateException();
         }
-        return result;
+
+        Animal animal = (Animal) joinPoint.getTarget();
+
+        if (!animal.getPossibleFoodTypes().contains(food.getFoodType())){
+            throw new FoodIncorrectTypeException();
+        }
     }
 
 }
